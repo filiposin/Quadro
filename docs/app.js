@@ -1,5 +1,5 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-import init, { Simulator } from "./pkg/quadcopter_web_sim.js";
+import init, { Simulator } from "./pkg/quadcopter_web_sim.js?v=5";
 
 const WALL_TEXTURE_URL =
   "https://grizly.club/uploads/posts/2023-01/1672825427_grizly-club-p-tekstura-khrushchevki-5.jpg";
@@ -187,8 +187,8 @@ function addBuildings(wallTexture, roofTexture) {
   for (const building of layouts) {
     const group = new THREE.Group();
 
-    const sideTextureA = cloneTexture(wallTexture, Math.max(2, Math.round(building.w / 2.7)), Math.max(3, Math.round(building.h / 2.8)));
-    const sideTextureB = cloneTexture(wallTexture, Math.max(2, Math.round(building.d / 2.7)), Math.max(3, Math.round(building.h / 2.8)));
+    const sideTextureA = stretchTexture(wallTexture);
+    const sideTextureB = stretchTexture(wallTexture);
     const roofTextureClone = cloneTexture(roofTexture, Math.max(2, Math.round(building.w / 2.4)), Math.max(2, Math.round(building.d / 2.4)));
 
     const facadeMaterials = [
@@ -402,6 +402,18 @@ function cloneTexture(source, repeatX, repeatY) {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(repeatX, repeatY);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = source.anisotropy;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function stretchTexture(source) {
+  const texture = source.clone();
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.repeat.set(1, 1);
+  texture.offset.set(0, 0);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = source.anisotropy;
   texture.needsUpdate = true;
