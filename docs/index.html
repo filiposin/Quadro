@@ -11,30 +11,10 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <canvas id="sim-canvas" aria-label="Симулятор квадрокоптера"></canvas>
+    <canvas id="viewport" aria-label="Симулятор квадрокоптера"></canvas>
 
-    <div class="corner">
-      <div class="chip">Rust + WebAssembly + Canvas</div>
-      <h1>Симулятор квадрокоптера</h1>
-      <p>
-        Браузерная 3D‑сцена, простая физика, автокамера и управление с клавиатуры.
-      </p>
-    </div>
+    <div id="loading" class="loading">Загрузка симулятора…</div>
 
-    <script type="module">
-      import init from "./pkg/quadcopter_web_sim.js";
-
-      init().catch((error) => {
-        console.error(error);
-        const box = document.createElement("div");
-        box.className = "error-box";
-        box.innerHTML = `
-          <strong>WASM ещё не собран.</strong><br>
-          Сначала выполни <code>wasm-pack build --release --target web --out-dir docs/pkg</code>,<br>
-          затем открой папку <code>docs</code> через локальный сервер или GitHub Pages.
-        `;
-        document.body.appendChild(box);
-      });
-    </script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
