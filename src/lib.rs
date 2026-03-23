@@ -34,8 +34,8 @@ impl Simulator {
             "KeyS" => self.input.back = pressed,
             "KeyA" => self.input.left = pressed,
             "KeyD" => self.input.right = pressed,
-            "KeyQ" => self.input.throttle_up = pressed,
-            "KeyE" => self.input.throttle_down = pressed,
+            "KeyQ" => self.input.ascend = pressed,
+            "KeyE" => self.input.descend = pressed,
             "KeyR" => self.input.yaw_left = pressed,
             "KeyF" => self.input.yaw_right = pressed,
             "KeyP" if pressed => self.paused = !self.paused,
@@ -107,13 +107,9 @@ impl Simulator {
 
 impl Simulator {
     fn step(&mut self, dt: f64) {
-        if self.input.throttle_up {
-            self.drone.throttle += 0.42 * dt;
-        }
-        if self.input.throttle_down {
-            self.drone.throttle -= 0.42 * dt;
-        }
-        self.drone.throttle = self.drone.throttle.clamp(0.38, 0.95);
+        let hover_throttle = 0.64;
+        self.drone.throttle += (hover_throttle - self.drone.throttle) * (1.0 - (-5.5 * dt).exp());
+        self.drone.throttle = self.drone.throttle.clamp(0.52, 0.82);
 
         let desired_roll = signed_axis(self.input.left, self.input.right) * 0.48;
         let desired_pitch = signed_axis(self.input.forward, self.input.back) * 0.38;
@@ -121,7 +117,7 @@ impl Simulator {
 
         let roll_acc = 8.0 * (desired_roll - self.drone.roll) - 3.1 * self.drone.roll_rate;
         let pitch_acc = 8.0 * (desired_pitch - self.drone.pitch) - 3.1 * self.drone.pitch_rate;
-        let yaw_acc = 5.0 * (desired_yaw_rate - self.drone.yaw_rate) - 1.8 * self.drone.yaw_rate;
+        let yaw_acc = 4.0 * (desired_yaw_rate - self.drone.yaw_rate) - 2.6 * self.drone.yaw_rate;
 
         self.drone.roll_rate += roll_acc * dt;
         self.drone.pitch_rate += pitch_acc * dt;
@@ -130,6 +126,10 @@ impl Simulator {
         self.drone.roll += self.drone.roll_rate * dt;
         self.drone.pitch += self.drone.pitch_rate * dt;
         self.drone.yaw = wrap_angle(self.drone.yaw + self.drone.yaw_rate * dt);
+
+        if !self.input.yaw_left && !self.input.yaw_right {
+            self.drone.yaw_rate *= (1.0 - 4.8 * dt).max(0.0);
+        }
 
         let roll_mix = (roll_acc * 0.04).clamp(-0.2, 0.2);
         let pitch_mix = (pitch_acc * 0.04).clamp(-0.2, 0.2);
@@ -147,7 +147,10 @@ impl Simulator {
         let gravity = Vec3::new(0.0, -9.81 * self.drone.mass, 0.0);
         let linear_drag = self.drone.velocity * -0.55;
 
-        let force = up_dir * total_thrust + gravity + linear_drag;
+        let vertical_intent = signed_axis(self.input.ascend, self.input.descend);
+        let vertical_force = Vec3::new(0.0, vertical_intent * self.drone.vertical_assist_force, 0.0);
+
+        let force = up_dir * total_thrust + gravity + linear_drag + vertical_force;
         let acceleration = force / self.drone.mass;
 
         self.drone.velocity += acceleration * dt;
@@ -184,8 +187,8 @@ struct InputState {
     right: bool,
     yaw_left: bool,
     yaw_right: bool,
-    throttle_up: bool,
-    throttle_down: bool,
+    ascend: bool,
+    descend: bool,
 }
 
 struct DroneState {
@@ -200,6 +203,7 @@ struct DroneState {
     pitch_rate: f64,
     yaw_rate: f64,
     throttle: f64,
+    vertical_assist_force: f64,
     motors: [f64; 4],
 }
 
@@ -217,6 +221,7 @@ impl Default for DroneState {
             pitch_rate: 0.0,
             yaw_rate: 0.0,
             throttle: 0.64,
+            vertical_assist_force: 19.5,
             motors: [0.64; 4],
         };
         drone.reset();

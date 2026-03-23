@@ -1,5 +1,5 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-import init, { Simulator } from "./pkg/quadcopter_web_sim.js?v=5";
+import init, { Simulator } from "./pkg/quadcopter_web_sim.js?v=6";
 
 const WALL_TEXTURE_URL =
   "https://grizly.club/uploads/posts/2023-01/1672825427_grizly-club-p-tekstura-khrushchevki-5.jpg";
@@ -170,18 +170,33 @@ function addRoads() {
 
 function addBuildings(wallTexture, roofTexture) {
   const layouts = [
-    { x: -34, z: -34, w: 13, d: 8, h: 16 },
-    { x: -34, z: 34, w: 12, d: 8, h: 15 },
-    { x: 34, z: -34, w: 13, d: 8, h: 17 },
-    { x: 34, z: 34, w: 12, d: 8, h: 16 },
-    { x: -58, z: -14, w: 11, d: 8, h: 14 },
-    { x: -58, z: 14, w: 11, d: 8, h: 14 },
-    { x: 58, z: -14, w: 11, d: 8, h: 14 },
-    { x: 58, z: 14, w: 11, d: 8, h: 14 },
-    { x: -14, z: -58, w: 8, d: 12, h: 15 },
-    { x: 14, z: -58, w: 8, d: 12, h: 15 },
-    { x: -14, z: 58, w: 8, d: 12, h: 15 },
-    { x: 14, z: 58, w: 8, d: 12, h: 15 },
+    { x: -64, z: -54, w: 12, d: 8, h: 15 },
+    { x: -40, z: -54, w: 13, d: 8, h: 16 },
+    { x: -16, z: -54, w: 12, d: 8, h: 15 },
+    { x: 16, z: -54, w: 12, d: 8, h: 15 },
+    { x: 40, z: -54, w: 13, d: 8, h: 16 },
+    { x: 64, z: -54, w: 12, d: 8, h: 15 },
+
+    { x: -64, z: 54, w: 12, d: 8, h: 15 },
+    { x: -40, z: 54, w: 13, d: 8, h: 16 },
+    { x: -16, z: 54, w: 12, d: 8, h: 15 },
+    { x: 16, z: 54, w: 12, d: 8, h: 15 },
+    { x: 40, z: 54, w: 13, d: 8, h: 16 },
+    { x: 64, z: 54, w: 12, d: 8, h: 15 },
+
+    { x: -54, z: -30, w: 11, d: 8, h: 14 },
+    { x: -54, z: 0, w: 11, d: 8, h: 14 },
+    { x: -54, z: 30, w: 11, d: 8, h: 14 },
+    { x: 54, z: -30, w: 11, d: 8, h: 14 },
+    { x: 54, z: 0, w: 11, d: 8, h: 14 },
+    { x: 54, z: 30, w: 11, d: 8, h: 14 },
+
+    { x: -26, z: -78, w: 8, d: 12, h: 15 },
+    { x: 0, z: -78, w: 8, d: 12, h: 15 },
+    { x: 26, z: -78, w: 8, d: 12, h: 15 },
+    { x: -26, z: 78, w: 8, d: 12, h: 15 },
+    { x: 0, z: 78, w: 8, d: 12, h: 15 },
+    { x: 26, z: 78, w: 8, d: 12, h: 15 },
   ];
 
   for (const building of layouts) {
