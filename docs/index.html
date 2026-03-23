@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rust Web Quadcopter Sim</title>
+    <meta
+      name="description"
+      content="3D симулятор квадрокоптера в браузере на Rust + WebAssembly"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="sim-canvas" aria-label="Симулятор квадрокоптера"></canvas>
+
+    <div class="corner">
+      <div class="chip">Rust + WebAssembly + Canvas</div>
+      <h1>Симулятор квадрокоптера</h1>
+      <p>
+        Браузерная 3D‑сцена, простая физика, автокамера и управление с клавиатуры.
+      </p>
+    </div>
+
+    <script type="module">
+      import init from "./pkg/quadcopter_web_sim.js";
+
+      init().catch((error) => {
+        console.error(error);
+        const box = document.createElement("div");
+        box.className = "error-box";
+        box.innerHTML = `
+          <strong>WASM ещё не собран.</strong><br>
+          Сначала выполни <code>wasm-pack build --release --target web --out-dir docs/pkg</code>,<br>
+          затем открой папку <code>docs</code> через локальный сервер или GitHub Pages.
+        `;
+        document.body.appendChild(box);
+      });
+    </script>
+  </body>
+</html>
